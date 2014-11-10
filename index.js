@@ -59,10 +59,10 @@ module.exports = function (args, opts) {
         var value = !flags.strings[key] && isNumber(val)
             ? Number(val) : val
         ;
-        setKey(argv, key.split('.'), value);
+        argv[key] = value;
         
         (aliases[key] || []).forEach(function (x) {
-            setKey(argv, x.split('.'), value);
+            argv[x] = value;
         });
     }
     
@@ -159,10 +159,10 @@ module.exports = function (args, opts) {
     
     Object.keys(defaults).forEach(function (key) {
         if (!hasKey(argv, key.split('.'))) {
-            setKey(argv, key.split('.'), defaults[key]);
+            argv[key] = defaults[key];
             
             (aliases[key] || []).forEach(function (x) {
-                setKey(argv, x.split('.'), defaults[key]);
+                argv[x] = defaults[key];
             });
         }
     });
@@ -190,25 +190,6 @@ function hasKey (obj, keys) {
 
     var key = keys[keys.length - 1];
     return key in o;
-}
-
-function setKey (obj, keys, value) {
-    var o = obj;
-    keys.slice(0,-1).forEach(function (key) {
-        if (o[key] === undefined) o[key] = {};
-        o = o[key];
-    });
-    
-    var key = keys[keys.length - 1];
-    if (o[key] === undefined || typeof o[key] === 'boolean') {
-        o[key] = value;
-    }
-    else if (Array.isArray(o[key])) {
-        o[key].push(value);
-    }
-    else {
-        o[key] = [ o[key], value ];
-    }
 }
 
 function isNumber (x) {
